@@ -143,8 +143,12 @@ ViewProviderMeasureBase::ViewProviderMeasureBase()
     transformEngine->matrix.connectFrom(&matrixEngine->matrix);
     pLabelTranslation->translation.connectFrom(&transformEngine->point);
 
+    auto pTextPickStyle = new SoPickStyle();
+    pTextPickStyle->style = SoPickStyle::SHAPE_ON_TOP;
+
     pTextSeparator = new SoSeparator();
     pTextSeparator->ref();
+    pTextSeparator->addChild(pTextPickStyle);
     pTextSeparator->addChild(dragSeparator);
     pTextSeparator->addChild(pLabelTranslation);
     pTextSeparator->addChild(pLabel);
