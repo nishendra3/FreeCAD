@@ -38,6 +38,7 @@
 #include <Base/Tools.h>
 #include <Base/UnitsApi.h>
 #include <Gui/Command.h>
+#include <Mod/TechDraw/App/DrawComplexSection.h>
 #include <Mod/TechDraw/App/DrawUtil.h>
 #include <Mod/TechDraw/App/DrawViewDimension.h>
 #include <Mod/TechDraw/App/DrawViewPart.h>
@@ -2252,6 +2253,30 @@ void QGIViewDimension::drawArea(TechDraw::DrawViewDimension* dimension,
     if (isAreaLeaderPointDragged) {
         // if origin has been dragged, use the new coordinates
         origin = Base::Vector2d(Rez::appX(areaLeaderPointLabel->X()), -Rez::appX(areaLeaderPointLabel->Y()));
+
+        // check if the origin falls inside the face
+        auto refs = dimension->getReferences2d();
+        if (refs.empty()) { return; }
+
+        auto face = dimension->getViewPart()->getFace(refs[0].getSubName());
+        if (!face) { return; }
+
+        TopoDS_Face occFace = face->toOccFace();
+        if (occFace.IsNull()) { return; }
+
+        Base::Vector3d testPt(origin.x, -origin.y, 0.0);
+        if (DrawComplexSection::pointOnFace(testPt, occFace)) {
+            // if point is on face : save location for later use
+            dimension->AreaLeaderPoint.setValue(Base::Vector3d(origin.x, -origin.y, 0.0));
+        }
+        else {
+            // if point is outside face : reset label to last valid location
+            origin = fromQtApp(dimension->AreaLeaderPoint.getValue());
+            areaLeaderPointLabel->blockSignals(true);
+            areaLeaderPointLabel->setPosFromCenter(toQtGui(origin).x(), toQtGui(origin).y());
+            areaLeaderPointLabel->blockSignals(false);
+        }
+        
     } 
     else {
         // use clicked location or area center as default origin
