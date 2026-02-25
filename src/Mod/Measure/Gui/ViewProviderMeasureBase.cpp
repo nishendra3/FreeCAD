@@ -345,11 +345,28 @@ void ViewProviderMeasureBase::updateIcon()
     pLabel->setIcon(Gui::BitmapFactory().pixmapFromSvg(sPixmap, QSize(20, 20), colorMap));
 }
 
+void ViewProviderMeasureBase::syncDraggerOrientationToView()
+{
+    Gui::View3DInventor* view = nullptr;
+    try {
+        view = dynamic_cast<Gui::View3DInventor*>(this->getActiveView());
+    }
+    catch (const Base::RuntimeError&) {
+        return;
+    }
+    if (view) {
+        auto* cam = view->getViewer()->getSoRenderManager()->getCamera();
+        if (cam) {
+            pDraggerOrientation->rotation.connectFrom(&cam->orientation);
+        }
+    }
+}
 
 void ViewProviderMeasureBase::attach(App::DocumentObject* pcObj)
 {
     ViewProviderDocumentObject::attach(pcObj);
     updateIcon();
+    syncDraggerOrientationToView();
 }
 
 
@@ -625,21 +642,7 @@ ViewProviderMeasure::ViewProviderMeasure()
     points->numPoints = 1;
     lineSep->addChild(points);
 
-    // Connect dragger local orientation to view orientation
-    Gui::View3DInventor* view = nullptr;
-    try {
-        view = dynamic_cast<Gui::View3DInventor*>(this->getActiveView());
-    }
-    catch (const Base::RuntimeError&) {
-        Base::Console().log("ViewProviderMeasure::ViewProviderMeasure: Could not get active view\n");
-    }
-
-    if (view) {
-        Gui::View3DInventorViewer* viewer = view->getViewer();
-        auto renderManager = viewer->getSoRenderManager();
-        auto cam = renderManager->getCamera();
-        pDraggerOrientation->rotation.connectFrom(&cam->orientation);
-    }
+    syncDraggerOrientationToView();
 }
 
 ViewProviderMeasure::~ViewProviderMeasure()
