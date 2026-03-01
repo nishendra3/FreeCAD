@@ -513,7 +513,6 @@ void TaskMeasure::updateResultWithUnit()
         }
 
         measureVp->setLabelValue(formattedResult);
-
     }
     else {
         valueResult->setText(resultString);
