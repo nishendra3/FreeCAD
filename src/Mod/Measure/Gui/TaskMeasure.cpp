@@ -60,6 +60,7 @@ constexpr auto taskMeasureSettingsGroup = "TaskMeasure";
 constexpr auto taskMeasureShowDeltaSettingsName = "ShowDelta";
 constexpr auto taskMeasureAutoSaveSettingsName = "AutoSave";
 constexpr auto taskMeasureGreedySelection = "GreedySelection";
+constexpr char32_t UnicodeSuperscript2 = 0x00B2;
 
 using SelectionStyle = Gui::SelectionSingleton::SelectionStyle;
 
@@ -88,7 +89,7 @@ QString extractUnitFromResultString(const QString& resultString)
 
     if (lastSpace != std::string::npos && lastSpace < str.length() - 1) {
         QString unit = QString::fromStdString(str.substr(lastSpace + 1));
-        unit.replace(QLatin1String("^2"), QChar(0x00B2));
+        unit.replace(QLatin1String("^2"), QChar(UnicodeSuperscript2));
         return unit;
     }
 
@@ -480,7 +481,7 @@ void TaskMeasure::updateResultWithUnit()
     if (currentUnit != QLatin1String("-") && !resultString.isEmpty()) {
         Base::Quantity resultQty = Base::Quantity::parse(resultString.toStdString());
         QString unitForParse = currentUnit;
-        unitForParse.replace(QChar(0x00B2), QLatin1String("^2"));
+        unitForParse.replace(QChar(UnicodeSuperscript2), QLatin1String("^2"));
         // Parse unit string like "1 mm" to get the target quantity
         Base::Quantity targetUnit = Base::Quantity::parse(
             (QLatin1String("1 ") + unitForParse).toStdString()

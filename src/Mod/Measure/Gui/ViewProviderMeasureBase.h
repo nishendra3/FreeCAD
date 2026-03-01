@@ -145,6 +145,7 @@ protected:
     SoDrawStyle* getSoLineStyleSecondary();
     SoSeparator* getSoSeparatorText();
 
+    static constexpr char32_t UnicodeSuperscript2 = 0x00B2;
     static constexpr double defaultTolerance = 10e-6;
     virtual Base::Vector3d getTextDirection(
         Base::Vector3d elementDirection,

@@ -694,7 +694,7 @@ void ViewProviderMeasure::redrawAnnotation()
     pcTransform->translation.setValue(SbVec3f(basePos.x, basePos.y, basePos.z));
 
     QString labelText = getMeasureObject()->getResultString();
-    labelText.replace(QLatin1String("^2"), QChar(0x00B2));
+    labelText.replace(QLatin1String("^2"), QChar(UnicodeSuperscript2));
     setLabelValue(labelText);
 
     ViewProviderMeasureBase::redrawAnnotation();
